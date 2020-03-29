@@ -1,9 +1,11 @@
-const pool = require('../Dao/operate');
-const userAddSql = `SELECT * FROM student`;
+const mysql = require('mysql');
+const pool = require('../Dao/operate.js');
+const $sql = require('../Dao/sql.js')
 const UserOp = {
   addUser(param) {
+    var sql = $sql.userAddSql;
     let promise = new Promise(function(resolve, reject) {
-      pool.query(userAddSql, param, function(err, results, fields) {
+      pool.query(sql, param, function(err, results, fields) {
         resolve({
           err: err,
           results: results,
