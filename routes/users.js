@@ -3,6 +3,10 @@ const router = express.Router();
 const user = require('../model/user');
 const $funData = require('./funData.js');
 /* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index', { title: 'Express' });
+});
+
 //查找所有
 router.get('/search', function(req, res, next) {
   const param = req.query || req.params;
