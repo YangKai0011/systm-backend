@@ -3,8 +3,8 @@ const router = express.Router();
 const user = require('../model/user');
 const $funData = require('./funData.js');
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/text', function(req, res, next) {
+  res.send('text')
 });
 
 //查找所有
