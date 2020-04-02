@@ -115,4 +115,40 @@ router.get('/:grade/:profession', function(req, res, next){
         });
 });
 
+//导员按楼号和宿舍号查询结果打印
+router.get('/tourguidefind/:buildnumber/:Dormitorynumber', function(req, res, next){
+    const param = req.params;
+    console.log(param);
+    
+    let conf = {};
+    let cols = ['学号', '姓名', '系别', '专业', '年级', '班级',  '电话', '父亲电话', '母亲电话'];
+    conf.cols = [];
+    for(let i = 0; i < cols.length; i++){
+        let tits = {};
+        tits.caption = cols[i];
+        tits.type = 'string';
+        conf.cols.push(tits);
+    }
+    user.tourguideFind(param).then(function(data){
+        let results = JSON.stringify(data.results);
+        let new_results = JSON.parse(results);
+        console.log(new_results);
+        let rows = ['studentid', 'name', 'department', 'profession', 'grade','class','tellphone','fatherphone', 'motherphonr'];
+        let datas = []
+        for(let i = 0; i < new_results.length; i++){
+            let row = [];
+            for(let j = 0; j < rows.length; j++){
+                row.push(new_results[i][rows[j]].toString());
+            }
+            datas.push(row);
+        }
+        conf.rows = datas;
+        let result = nodeexcel.execute(conf);
+        res.setHeader('Content-Type','application/vnd.openxmlformats;charset=utf-8');
+        //设置下载文件名,中文文件名可以通过编码转换写入headr中
+        res.setHeader("Content-Disposition","attachment; filename="+ encodeURI('宿舍分布信息表') + ".xlsx");
+        res.end(result,'binary');
+    });
+});
+
 module.exports = router;
