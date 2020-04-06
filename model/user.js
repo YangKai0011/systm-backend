@@ -18,11 +18,18 @@ const UserOp = {
     });
     return promise;
   },
-  //按照宿舍号查找所有成员
+  //按照宿舍号楼号查找所有成员
   findDormitory(param) {
-    const sql = 'select * from student where Dormitorynumber=?';
+    const sqlAnd = 'select * from student where dormitorynumber=? and buildnumber=?';
+    const sqlOr = 'select * from student where dormitorynumber=? or buildnumber=?';
+    let sql = null;
+    if(param.dormitorynumber && param.buildnumber){
+      sql = sqlAnd;
+    }else{
+      sql = sqlOr;
+    }
     let promise = new Promise(function(resolve, reject){
-      pool.query(sql, param, function(err, results, fields){
+      pool.query(sql, [param.dormitorynumber, param.buildnumber], function(err, results, fields){
         resolve({
           err: err,
           results: results,
@@ -38,7 +45,14 @@ const UserOp = {
   },
   //通过专业和年级查找宿舍成员
   findGradeAndProfession(param){
-    const sql = 'select buildnumber, Dormitorynumber from student where grade=? and profession=?';
+    const sqlOr = 'select DISTINCT buildnumber, dormitorynumber from student where grade=? or profession=?';
+    const sqlAnd = 'select DISTINCT buildnumber, dormitorynumber from student where grade=? and profession=?';
+    let sql = null;
+     if(param.grade&&param.profession){
+        sql = sqlAnd;
+      }else {
+        sql = sqlOr;
+      }
     let promise = new Promise(function(resolve,reject){
       pool.query(sql, [param.grade, param.profession],function(err, results,fields){
         resolve({
@@ -54,11 +68,80 @@ const UserOp = {
     return promise;
   },
 
+  //通过宿管号,宿舍号,年级，专业， 系别来查询学生信息
+  findStub(param){
+    const sqlOr =  'SELECT  * FROM  student WHERE buildnumber=(SELECT stubnumber FROM stub WHERE stubnumber=?) and (grade=? or profession=? or department=?)';
+    const sqlAnd =  'SELECT  * FROM  student WHERE buildnumber=(SELECT stubnumber FROM stub WHERE stubnumber=?) and (grade=? and profession=? and department=?)';
+    let sql = null;
+    if(param.grade&&param.profession&&param.department){
+      sql = sqlAnd;
+    }else{
+      sql = sqlOr;
+    }
+    let promise = new Promise(function(resolve,reject){
+      pool.query(sql, [param.stubnumber, param.grade, param.profession, param.department],function(err, results,fields){
+        resolve({
+          err: err,
+          results: results,
+          fields: fields
+        });
+        reject({
+          err: err
+        });
+      });
+    });
+    return promise;
+  },
+
+   //通过宿管号,宿舍号查询学生信息
+   findStubAndDormitorynumber(param){
+    const sql =  'SELECT  * FROM  student WHERE buildnumber=(SELECT stubnumber FROM stub WHERE stubnumber=?) and dormitorynumber=?';
+    let promise = new Promise(function(resolve,reject){
+      pool.query(sql, [param.stubnumber, param.dormitorynumber],function(err, results,fields){
+        resolve({
+          err: err,
+          results: results,
+          fields: fields
+        });
+        reject({
+          err: err
+        });
+      });
+    });
+    return promise;
+  },
+
+   //通过宿管号,学号，姓名查询学生信息
+   findStubNameAndId(param){
+    const sqlOr =  'SELECT  * FROM  student WHERE buildnumber=(SELECT stubnumber FROM stub WHERE stubnumber=?) and (studentid=? or name=?)';
+    const sqlAnd =  'SELECT  * FROM  student WHERE buildnumber=(SELECT stubnumber FROM stub WHERE stubnumber=?) and (studentid=? and name=?)';
+    let sql = null;
+    if(param.name&&param.studentid){
+      sql = sqlAnd;
+    }else{
+      sql = sqlOr;
+    }
+    let promise = new Promise(function(resolve,reject){
+      pool.query(sql, [param.stubnumber, param.studentid, param.name],function(err, results,fields){
+        resolve({
+          err: err,
+          results: results,
+          fields: fields
+        });
+        reject({
+          err: err
+        });
+      });
+    });
+    return promise;
+  },
+
+
   //导员导入信息
-  findDepartmentGrade(param){
-    const sql = 'insert into student(studentid,name,department,profession,grade) values(?,?,?,?,?)';
+  insertDepartmentGrade(param){
+    const sql = 'insert into student(studentid,name,department,profession,grade,class) values(?,?,?,?,?,?)';
     let promise = new Promise(function(resolve, reject){
-      pool.query(sql, [param.studentid, param.name, param.department,param.profession, param.grade], function(err, results, fields){
+      pool.query(sql, [param.studentid, param.name, param.department,param.profession, param.grade, param.class], function(err, results, fields){
         resolve({
           err: err,
           results: results,
