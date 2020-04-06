@@ -25,7 +25,10 @@ router.post('/login', function (req, res, next) {
 router.get('/check', function(req, res, next){
   let token = req.headers['authorization'];
   if(token){
-    tokenUtil.yyy(token);
+    const status = tokenUtil.yyy(token);
+    res.send({status: status});
+  }else{
+    res.send({status: status});
   }
 });
 
