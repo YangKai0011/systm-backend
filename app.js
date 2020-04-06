@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/users',userRouter);
 app.use(function(req, res, next){
-  if(req.originalUrl != '/users/login'){
+  if(req.originalUrl != '/users/check'){
     //获得token
     let token = req.body.token;
     if(token){
@@ -40,9 +40,6 @@ app.use(function(req, res, next){
   }
 });
 app.use('/', studentRouter);
-app.use('/rating', ratingRouter);
-app.use('/excel',excelRouter);
-app.use('/upload',uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

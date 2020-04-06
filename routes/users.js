@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken'); 
 const account = require('../model/account');
-router.post('/login', function(req, res, next) {
+router.post('/check', function(req, res, next) {
   const param = req.body;
-  //console.log(param);
+
   
   account.CheckAccent(param).then(function(data){
     if (!data.err) {
