@@ -7,10 +7,7 @@ const jwt = require('jsonwebtoken');
 
 var studentRouter = require('./routes/students');
 var userRouter = require('./routes/users');
-var excelRouter = require('./routes/excel');
-var uploadRouter = require('./routes/upload');
-var ratingRouter = require('./routes/rating');
-
+const allowCors = require('./lib/allowCors'); //跨域许可
 var app = express();
 app.use(logger('dev'));
 app.use(express.json());
@@ -19,7 +16,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/users',userRouter);
-app.use(function(req, res, next){
+/* app.use(function(req, res, next){
   if(req.originalUrl != '/users/check'){
     //获得token
     let token = req.body.token;
@@ -38,7 +35,7 @@ app.use(function(req, res, next){
   }else{
     return next;
   }
-});
+}); */
 app.use('/', studentRouter);
 
 // catch 404 and forward to error handler

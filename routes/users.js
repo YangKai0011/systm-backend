@@ -1,29 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken'); 
 const account = require('../model/account');
-router.post('/check', function(req, res, next) {
-  const param = req.body;
+const tokenUtil = require('../lib/tokenUnit');
 
-  
-  account.CheckAccent(param).then(function(data){
-    if (!data.err) {
-      const token = jwt.sign({data: data.results}, 'secret',{expiresIn: "1d"});
-      res.send(token);   
-     /*  setTimeout(() => {
-        jwt.verify(token, 'secret', (err, decoded)=>{
-          console.log(err);
-          if(err){
-            console.log('token 失效');
-          }else{
-            console.log('token data is ' + JSON.stringify(decoded));
-          }
-        });
-      }, 5000);   */   
-    } else {
-      console.log(data.err);
-    } 
-  });
+router.post('/login', function (req, res, next) {
+  const param = req.body;
+  account.CheckAccent(param).then(function (data) {
+   const user = data.results[0];
+
+    const userInfo = {
+      id: user.id,
+      accent: user.accent,
+      role: user.role
+
+    }
+
+    const token = tokenUtil.xxx(userInfo);
+    res.send({tokenStr: token});
+  })
 });
+
+/* router.get('/check', function(req, res, next) {
+  const param = req.body;
+  account.CheckAccent(param).then(function(data){
+    console.log(typeof data);
+    
+});
+}); */
 
 module.exports = router;
