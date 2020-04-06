@@ -2,7 +2,7 @@ mysql = {
   host: 'localhost',
   port: 3306,
   user: 'root',
-  password: 'yk19990131',
+  password: '123456',
   database: 'dormroom',
   insecureAuth: true
 };
